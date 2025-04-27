@@ -202,6 +202,9 @@
 <script src="./js/gameboy.js"></script>
 
 <script>
+// Define GameboyJS variable to ensure it's available
+window.GameboyJS = window.GameboyJS || {};
+
 // Audio context initialization
 let audioContext = null;
 var g; // Make g variable global
@@ -234,20 +237,26 @@ document.getElementById('enable-audio').addEventListener('click', function() {
 
 // configuration
 function setupGameboy() {
-    var opts = {
-        romReaders: [
-            new GameboyJS.RomFileReader(),
-            new GameboyJS.RomDropFileReader(document.getElementById('dropzone'))
-        ]
-    };
-    g = new GameboyJS.Gameboy(document.getElementById('canvas'), opts);
-    g.setSoundEnabled(document.getElementById('sound-enable').checked);
-    g.setScreenZoom(document.getElementById('screen-zoom').value);
+    try {
+        var opts = {
+            romReaders: [
+                new GameboyJS.RomFileReader(),
+                new GameboyJS.RomDropFileReader(document.getElementById('dropzone'))
+            ]
+        };
+        g = new GameboyJS.Gameboy(document.getElementById('canvas'), opts);
+        g.setSoundEnabled(document.getElementById('sound-enable').checked);
+        g.setScreenZoom(document.getElementById('screen-zoom').value);
+    } catch (error) {
+        console.error("Error setting up GameboyJS:", error);
+        document.getElementById('error').classList.remove('hide');
+        document.getElementById('error').textContent = "Error initializing emulator: " + error.message;
+    }
 }
 
-// When document is loaded, initialize the Audio
+// When document is fully loaded, initialize the Audio
 document.addEventListener('DOMContentLoaded', function() {
-    initAudio();
+    setTimeout(initAudio, 100); // Small delay to ensure all scripts are loaded
 });
 </script>
 
